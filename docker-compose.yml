@@ -1,13 +1,13 @@
 version: "3"
 services:
-  mysql:
-    image: mysql:latest
-    container_name: mysql
+  postgres:
+    image: postgres:latest
+    container_name: postgres
     env_file:
       - ./.env
     ports:
-      - "3306:3306"
+      - "5432:5432"
     volumes:
-      - mysqlDb:/var/lib/mysql
+      - postgresDb:/var/lib/postgresql/data
 volumes:
-  mysqlDb:
+  postgresDb:

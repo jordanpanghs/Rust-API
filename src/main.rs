@@ -10,13 +10,13 @@ use axum::http::{header::CONTENT_TYPE, Method};
 use dotenv::dotenv;
 use tokio::net::TcpListener;
 
-use sqlx::mysql::{MySqlPool, MySqlPoolOptions};
+use sqlx::postgres::{PgPool, PgPoolOptions};
 
 use route::create_router;
 use tower_http::cors::{Any, CorsLayer};
 
 pub struct AppState {
-    db: MySqlPool,
+    db: PgPool,
 }
 
 #[tokio::main]
@@ -24,8 +24,8 @@ async fn main() {
     dotenv().ok();
     println!("🌟 REST API Service 🌟");
 
-    let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must set");
-    let pool = match MySqlPoolOptions::new()
+    let database_url: String = std::env::var("DATABASE_URL").expect("DATABASE_URL must set");
+    let pool: PgPool = match PgPoolOptions::new()
         .max_connections(10)
         .connect(&database_url)
         .await
@@ -40,16 +40,16 @@ async fn main() {
         }
     };
 
-    let cors = CorsLayer::new()
+    let cors: CorsLayer = CorsLayer::new()
         .allow_methods([Method::GET, Method::POST])
         .allow_origin(Any)
         .allow_headers([CONTENT_TYPE]);
 
-    let app = create_router(Arc::new(AppState { db: pool.clone() })).layer(cors);
+    let app: axum::Router = create_router(Arc::new(AppState { db: pool.clone() })).layer(cors);
 
     println!("✅ Server started successfully at 0.0.0.0:8080");
 
-    let listener = TcpListener::bind("0.0.0.0:8080").await.unwrap();
+    let listener: TcpListener = TcpListener::bind("0.0.0.0:8080").await.unwrap();
     axum::serve(listener, app.into_make_service())
         .await
         .unwrap();
