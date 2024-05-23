@@ -7,6 +7,10 @@ pub struct UserModel {
     pub id: String,
     pub username: String,
     pub password: String, // This should be a hashed password
+    pub email: String,
+    pub phone: String,
+    pub role: String,
+    pub name: String,
     pub created_at: chrono::NaiveDateTime,
     pub updated_at: chrono::NaiveDateTime,
 }
